@@ -143,7 +143,7 @@ export default function Deposit() {
   const form = useForm<DepositFormValues>({
     resolver: zodResolver(depositSchema),
     defaultValues: {
-      amount: undefined,
+      amount: 0, // Use 0 as default value instead of undefined
     },
   });
 

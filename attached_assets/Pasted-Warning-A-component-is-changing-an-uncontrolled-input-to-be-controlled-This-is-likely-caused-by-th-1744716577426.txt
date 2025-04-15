@@ -1,0 +1,53 @@
+Warning: A component is changing an uncontrolled input to be controlled. This is likely caused by the value changing from undefined to a defined value, which should not happen. Decide between using a controlled or uncontrolled input element for the lifetime of the component. More info: https://reactjs.org/link/controlled-components
+    at input
+    at _c (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/components/ui/input.tsx:20:11)
+    at div
+    at https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-UACHJROW.js?v=087d6af4:52:11
+    at https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-UACHJROW.js?v=087d6af4:33:11
+    at https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/components/ui/form.tsx:129:9
+    at div
+    at https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/components/ui/form.tsx:71:6
+    at Controller (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YABUFNLM.js?v=087d6af4:313:35)
+    at FormField (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/components/ui/form.tsx:32:6)
+    at form
+    at FormProvider (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YABUFNLM.js?v=087d6af4:102:11)
+    at div
+    at _c9 (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at Deposit (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/pages/deposit.tsx:146:27)
+    at Route (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=087d6af4:323:16)
+    at Switch (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=087d6af4:379:17)
+    at AuthProvider (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/hooks/use-auth.tsx:22:32)
+    at QueryClientProvider (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=087d6af4:2805:3)
+    at App (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/App.tsx?t=1744715899957&v=Ur7gLIU_R4CuqyXsEujZM:34:37)
+at input
+at _c (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/components/ui/input.tsx:20:11)
+at div
+at https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-UACHJROW.js?v=087d6af4:52:11
+at https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-UACHJROW.js?v=087d6af4:33:11
+at https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/components/ui/form.tsx:129:9
+at div
+at https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/components/ui/form.tsx:71:6
+at Controller (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YABUFNLM.js?v=087d6af4:313:35)
+at FormField (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/components/ui/form.tsx:32:6)
+at form
+at FormProvider (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YABUFNLM.js?v=087d6af4:102:11)
+at div
+at _c9 (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/components/ui/card.tsx:114:12)
+at div
+at _c (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/components/ui/card.tsx:20:11)
+at div
+at div
+at Deposit (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/pages/deposit.tsx:146:27)
+at Route (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=087d6af4:323:16)
+at Switch (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=087d6af4:379:17)
+at AuthProvider (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/hooks/use-auth.tsx:22:32)
+at QueryClientProvider (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=087d6af4:2805:3)
+at App (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/src/App.tsx?t=1744715899957&amp;v=Ur7gLIU_R4CuqyXsEujZM:34:37)
+at t.value (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://979f73e8-e9d0-4eb7-9dd9-c72b78741c3b-00-1ei9o7ncg1bg6.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
