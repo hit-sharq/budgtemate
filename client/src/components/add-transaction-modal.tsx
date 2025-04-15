@@ -44,7 +44,7 @@ export function AddTransactionModal({ open, onOpenChange, categories, wallet }: 
     resolver: zodResolver(formSchema),
     defaultValues: {
       type: "expense",
-      amount: undefined,
+      amount: 0,
       categoryId: undefined,
       description: "",
       date: new Date(),
