@@ -47,7 +47,7 @@ export interface InsertTransaction {
   amount: number;
   categoryId?: number;
   description?: string;
-  date: Date;
+  date: Date | string;  // Can be either Date object or ISO string
 }
 
 // Budget types

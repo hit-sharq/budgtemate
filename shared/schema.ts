@@ -97,6 +97,12 @@ export const depositSchema = z.object({
   amount: z.number().positive({ message: "Amount must be positive" }),
 });
 
+export const mpesaPaymentSchema = z.object({
+  phoneNumber: z.string().min(10).max(12),
+  amount: z.number().positive({ message: "Amount must be positive" }),
+  description: z.string().optional(),
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type LoginUser = z.infer<typeof loginUserSchema>;
 export type InsertWallet = z.infer<typeof insertWalletSchema>;
@@ -104,6 +110,7 @@ export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
 export type InsertBudget = z.infer<typeof insertBudgetSchema>;
 export type Deposit = z.infer<typeof depositSchema>;
+export type MpesaPayment = z.infer<typeof mpesaPaymentSchema>;
 
 export type User = typeof users.$inferSelect;
 export type Wallet = typeof wallets.$inferSelect;
