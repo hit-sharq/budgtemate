@@ -62,6 +62,7 @@ export function useWallet() {
     isLoading,
     error,
     deposit,
-    createPaymentIntent
+    createPaymentIntent,
+    refetchWallet
   };
 }

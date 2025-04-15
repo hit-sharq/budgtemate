@@ -101,9 +101,18 @@ export default function Wallet() {
                       onClick={() => navigate("/deposit")}
                       className="bg-primary text-white"
                     >
-                      <span className="material-icons mr-2 text-sm">add</span>
-                      Deposit
+                      <span className="material-icons mr-2 text-sm">credit_card</span>
+                      Card Deposit
                     </Button>
+                    <Button 
+                      onClick={() => navigate("/mpesa-deposit")}
+                      className="bg-green-500 hover:bg-green-600 text-white"
+                    >
+                      <span className="material-icons mr-2 text-sm">smartphone</span>
+                      M-Pesa
+                    </Button>
+                  </div>
+                  <div className="mt-3 grid grid-cols-1">
                     <Button 
                       variant="outline"
                       className="bg-neutral-100 text-neutral-700 border-neutral-200"
