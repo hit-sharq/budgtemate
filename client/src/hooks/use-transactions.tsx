@@ -26,6 +26,7 @@ export function useTransactions() {
   // Add a new transaction
   const addTransaction = useMutation({
     mutationFn: async (transaction: InsertTransaction) => {
+      console.log("Transaction data being sent:", transaction);
       const response = await apiRequest("POST", "/api/transactions", transaction);
       return response.json();
     },

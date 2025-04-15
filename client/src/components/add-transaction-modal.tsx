@@ -52,11 +52,15 @@ export function AddTransactionModal({ open, onOpenChange, categories, wallet }: 
   });
   
   function onSubmit(values: FormValues) {
+    // Format the date as ISO string to ensure proper serialization
+    const formattedData = {
+      ...values,
+      type: transactionType,
+      date: values.date.toISOString()
+    };
+    
     addTransaction.mutate(
-      { 
-        ...values,
-        type: transactionType,
-      },
+      formattedData,
       {
         onSuccess: () => {
           form.reset();

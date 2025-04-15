@@ -74,12 +74,19 @@ export const insertCategorySchema = createInsertSchema(categories).omit({
   createdAt: true,
 });
 
-export const insertTransactionSchema = createInsertSchema(transactions).omit({
-  id: true,
-  createdAt: true,
-  userId: true,
-  walletId: true,
-});
+export const insertTransactionSchema = createInsertSchema(transactions)
+  .omit({
+    id: true,
+    createdAt: true,
+    userId: true,
+    walletId: true,
+  })
+  .extend({
+    // Ensure the type field only accepts valid values
+    type: z.enum(['income', 'expense', 'transfer', 'deposit']),
+    // Accept both Date objects and ISO strings for date 
+    date: z.union([z.string().datetime(), z.date()])
+  });
 
 export const insertBudgetSchema = createInsertSchema(budgets).omit({
   id: true,
