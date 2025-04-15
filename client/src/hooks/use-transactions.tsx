@@ -77,6 +77,7 @@ export function useTransactions() {
     isLoading,
     error,
     addTransaction,
+    isPending: addTransaction.isPending,
     totals,
     groupedByDate
   };

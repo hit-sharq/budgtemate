@@ -77,6 +77,8 @@ export const insertCategorySchema = createInsertSchema(categories).omit({
 export const insertTransactionSchema = createInsertSchema(transactions).omit({
   id: true,
   createdAt: true,
+  userId: true,
+  walletId: true,
 });
 
 export const insertBudgetSchema = createInsertSchema(budgets).omit({
