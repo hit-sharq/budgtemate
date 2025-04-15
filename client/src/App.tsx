@@ -9,6 +9,7 @@ import Wallet from "./pages/wallet";
 import Analytics from "./pages/analytics";
 import Profile from "./pages/profile";
 import Deposit from "./pages/deposit";
+import MpesaDeposit from "./pages/mpesa-deposit";
 import NotFound from "./pages/not-found";
 import { AuthProvider } from "./hooks/use-auth";
 
@@ -49,6 +50,7 @@ function App() {
           <Route path="/analytics" component={Analytics} />
           <Route path="/profile" component={Profile} />
           <Route path="/deposit" component={Deposit} />
+          <Route path="/mpesa-deposit" component={MpesaDeposit} />
           <Route component={NotFound} />
         </Switch>
       </AuthProvider>

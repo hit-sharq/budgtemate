@@ -11,7 +11,8 @@ export function useWallet() {
   const { 
     data: wallet, 
     isLoading, 
-    error 
+    error,
+    refetch: refetchWallet
   } = useQuery<Wallet>({
     queryKey: ['/api/wallet']
   });

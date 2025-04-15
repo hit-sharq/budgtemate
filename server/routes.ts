@@ -8,8 +8,10 @@ import {
   loginUserSchema, 
   insertTransactionSchema, 
   insertBudgetSchema, 
-  depositSchema 
+  depositSchema,
+  mpesaPaymentSchema
 } from "@shared/schema";
+import { initiateSTKPush, checkTransactionStatus, validateMpesaCallback } from "./services/mpesa";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import session from "express-session";
@@ -364,6 +366,133 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Deposit error:", error);
       return res.status(500).json({ message: "Error processing deposit" });
+    }
+  });
+
+  // M-Pesa payment routes
+  app.post("/api/mpesa/stk-push", authenticate, validateRequest(mpesaPaymentSchema), async (req, res) => {
+    try {
+      const userId = req.session.userId as number;
+      const { phoneNumber, amount, description = "BudgetWise Wallet Top-up" } = req.body;
+
+      // Get callback URL (in production, use your actual domain)
+      const callbackUrl = `${process.env.APP_URL || 'https://budgetwise.replit.app'}/api/mpesa/callback`;
+      
+      // Initiate STK Push
+      const result = await initiateSTKPush({
+        phoneNumber,
+        amount,
+        callbackUrl,
+        accountReference: "BudgetWise",
+        description
+      });
+      
+      // Store the CheckoutRequestID for later validation
+      // In a real application, you might want to store this in the database
+      
+      return res.status(200).json({
+        message: "M-Pesa payment initiated",
+        checkoutRequestId: result.CheckoutRequestID,
+        merchantRequestId: result.MerchantRequestID
+      });
+    } catch (error: any) {
+      console.error("M-Pesa STK Push error:", error);
+      return res.status(500).json({ 
+        message: "Error initiating M-Pesa payment",
+        error: error.message 
+      });
+    }
+  });
+
+  // M-Pesa callback endpoint (called by M-Pesa after payment)
+  app.post("/api/mpesa/callback", async (req, res) => {
+    try {
+      // Validate the callback
+      if (!validateMpesaCallback(req.body)) {
+        return res.status(400).json({ message: "Invalid callback data" });
+      }
+      
+      // Extract relevant information from callback
+      const { Body } = req.body;
+      
+      // If payment was successful
+      if (Body.stkCallback.ResultCode === 0) {
+        const callbackMetadata = Body.stkCallback.CallbackMetadata.Item;
+        
+        // Extract amount and phone number
+        const amount = callbackMetadata.find((item: any) => item.Name === "Amount")?.Value || 0;
+        const phoneNumber = callbackMetadata.find((item: any) => item.Name === "PhoneNumber")?.Value || "";
+        const transactionId = callbackMetadata.find((item: any) => item.Name === "MpesaReceiptNumber")?.Value || "";
+        
+        // In a real application, you would:
+        // 1. Find the user by phone number
+        // 2. Update their wallet balance
+        // 3. Create a transaction record
+        
+        console.log(`M-Pesa payment successful: ${amount} from ${phoneNumber}, receipt: ${transactionId}`);
+      } else {
+        console.error(`M-Pesa payment failed: ${Body.stkCallback.ResultDesc}`);
+      }
+      
+      // Always respond with success to M-Pesa
+      return res.status(200).json({ message: "Callback received" });
+    } catch (error) {
+      console.error("M-Pesa callback error:", error);
+      // Still return success to M-Pesa to prevent retries
+      return res.status(200).json({ message: "Callback processed" });
+    }
+  });
+
+  // M-Pesa query transaction status
+  app.get("/api/mpesa/transaction/:checkoutRequestId", authenticate, async (req, res) => {
+    try {
+      const { checkoutRequestId } = req.params;
+      
+      const result = await checkTransactionStatus(checkoutRequestId);
+      
+      return res.status(200).json(result);
+    } catch (error: any) {
+      console.error("M-Pesa transaction status check error:", error);
+      return res.status(500).json({ 
+        message: "Error checking transaction status",
+        error: error.message 
+      });
+    }
+  });
+
+  // M-Pesa manual deposit confirmation (for demo/testing purposes)
+  app.post("/api/mpesa/confirm-deposit", authenticate, validateRequest(mpesaPaymentSchema), async (req, res) => {
+    try {
+      const userId = req.session.userId as number;
+      const { amount, phoneNumber, description = "M-Pesa deposit" } = req.body;
+      
+      // Get user wallet
+      const wallet = await storage.getWalletByUserId(userId);
+      if (!wallet) {
+        return res.status(404).json({ message: "Wallet not found" });
+      }
+      
+      // Create deposit transaction
+      const transaction = await storage.createTransaction({
+        userId,
+        walletId: wallet.id,
+        type: "deposit",
+        amount: parseFloat(amount.toString()),
+        description: `${description} via M-Pesa from ${phoneNumber}`,
+        date: new Date(),
+      });
+      
+      // Get updated wallet
+      const updatedWallet = await storage.getWalletByUserId(userId);
+      
+      return res.status(200).json({ 
+        message: "M-Pesa deposit successful", 
+        transaction, 
+        wallet: updatedWallet 
+      });
+    } catch (error) {
+      console.error("M-Pesa manual deposit error:", error);
+      return res.status(500).json({ message: "Error processing M-Pesa deposit" });
     }
   });
 
