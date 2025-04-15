@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { useNavigate } from "@/hooks/use-navigate";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "hooks/use-navigate";
+import { Button } from "components/ui/button";
+import { Input } from "components/ui/input";
+import { useToast } from "hooks/use-toast";
 import {
   Card,
   CardContent,
   CardHeader,
   CardFooter,
-} from "@/components/ui/card";
+} from "components/ui/card";
 import {
   Form,
   FormControl,
@@ -16,60 +16,110 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "hooks/use-auth";
 
-const formSchema = z.object({
-  username: z.string().min(3, { message: "Username must be at least 3 characters" }),
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
-});
+const passwordStrength = (password: string) => {
+  let score = 0;
+  if (!password) return score;
+  if (password.length >= 8) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+  return score;
+};
+
+const formSchema = z
+  .object({
+    username: z.string().min(3, { message: "Username must be at least 3 characters" }),
+    email: z.string().email({ message: "Invalid email address" }),
+    password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+    confirmPassword: z.string().min(6, { message: "Confirm password is required" }),
+    firstName: z.string().min(1, { message: "First name is required" }),
+    lastName: z.string().min(1, { message: "Last name is required" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 type FormValues = z.infer<typeof formSchema>;
 
 export default function Register() {
   const [isRegistering, setIsRegistering] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordScore, setPasswordScore] = useState(0);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { register } = useAuth();
-  
+  const { register: registerUser } = useAuth();
+  const formRef = useRef<HTMLFormElement>(null);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
       email: "",
       password: "",
+      confirmPassword: "",
       firstName: "",
       lastName: "",
     },
   });
-  
+
+  useEffect(() => {
+    if (form.formState.isSubmitted && !form.formState.isValid) {
+      // Focus on first invalid field
+      const firstErrorField = Object.keys(form.formState.errors)[0];
+      const element = formRef.current?.querySelector(`[name="${firstErrorField}"]`) as HTMLElement;
+      element?.focus();
+    }
+  }, [form.formState]);
+
+  useEffect(() => {
+    setPasswordScore(passwordStrength(form.getValues("password")));
+  }, [form.watch("password")]);
+
   async function onSubmit(values: FormValues) {
     setIsRegistering(true);
-    
+
     try {
-      await register(values);
-      toast({
-        title: "Registration Successful",
-        description: "Your account has been created. You can now log in.",
+      await registerUser({
+        username: values.username,
+        email: values.email,
+        password: values.password,
+        firstName: values.firstName,
+        lastName: values.lastName,
       });
-      navigate("/dashboard");
+      toast({
+        title: "Account created",
+        description: "Your account has been created successfully.",
+      });
+      navigate("/login");
     } catch (error: any) {
       toast({
         title: "Registration Failed",
-        description: error.message || "There was an error creating your account.",
+        description: error.message || "Please try again later.",
         variant: "destructive",
       });
     } finally {
       setIsRegistering(false);
     }
   }
-  
+
+  function handleSocialSignup(provider: string) {
+    toast({
+      title: "Social Signup",
+      description: `Social signup with ${provider} is not implemented yet.`,
+    });
+  }
+
+  const strengthLabels = ["", "Weak", "Fair", "Good", "Strong"];
+  const strengthColors = ["", "bg-red-500", "bg-yellow-400", "bg-blue-500", "bg-green-600"];
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-neutral-100">
       <Card className="w-full max-w-md bg-white rounded-lg shadow-lg overflow-hidden">
@@ -82,11 +132,11 @@ export default function Register() {
             <p className="text-white text-sm opacity-80">Smart Budget & Wallet App</p>
           </div>
         </CardHeader>
-        
+
         <div className="flex border-b">
-          <button 
+          <button
             className="flex-1 py-3 font-medium text-center text-neutral-400"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/login")}
           >
             Login
           </button>
@@ -94,131 +144,209 @@ export default function Register() {
             Sign Up
           </button>
         </div>
-        
+
         <CardContent className="p-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>
               <FormField
                 control={form.control}
                 name="username"
-                render={({ field }) => (
+                render={({ field }: { field: any }) => (
                   <FormItem>
                     <FormLabel className="text-neutral-700">Username</FormLabel>
                     <FormControl>
-                      <Input placeholder="Choose a username" {...field} />
+                      <Input placeholder="Your username" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="email"
-                render={({ field }) => (
+                render={({ field }: { field: any }) => (
                   <FormItem>
                     <FormLabel className="text-neutral-700">Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="your@email.com" {...field} />
+                      <Input type="email" placeholder="you@example.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-neutral-700">First Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="First name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-neutral-700">Last Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Last name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              
+
               <FormField
                 control={form.control}
                 name="password"
-                render={({ field }) => (
+                render={({ field }: { field: any }) => (
                   <FormItem>
                     <FormLabel className="text-neutral-700">Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="••••••••"
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            setPasswordScore(passwordStrength(e.target.value));
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-sm text-primary"
+                          aria-label={showPassword ? "Hide password" : "Show password"}
+                        >
+                          {showPassword ? "Hide" : "Show"}
+                        </button>
+                      </div>
+                      <div className="mt-1 h-1 w-full rounded bg-gray-200">
+                        <div
+                          className={`h-1 rounded ${strengthColors[passwordScore]}`}
+                          style={{ width: `${(passwordScore / 4) * 100}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-xs mt-1 text-neutral-600">{strengthLabels[passwordScore]}</p>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
+
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }: { field: any }) => (
+                  <FormItem>
+                    <FormLabel className="text-neutral-700">Confirm Password</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          type={showConfirmPassword ? "text" : "password"}
+                          placeholder="••••••••"
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-sm text-primary"
+                          aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                        >
+                          {showConfirmPassword ? "Hide" : "Show"}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }: { field: any }) => (
+                  <FormItem>
+                    <FormLabel className="text-neutral-700">First Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="First name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }: { field: any }) => (
+                  <FormItem>
+                    <FormLabel className="text-neutral-700">Last Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Last name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <Button
                 type="submit"
-                className="w-full bg-primary hover:bg-primary-dark text-white"
+                className="w-full bg-primary hover:bg-primary-dark text-white flex items-center justify-center"
                 disabled={isRegistering}
               >
-                {isRegistering ? "Creating account..." : "Create Account"}
+                {isRegistering ? (
+                  <>
+                    <svg
+                      className="animate-spin h-5 w-5 mr-2 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8z"
+                      ></path>
+                    </svg>
+                    Creating account...
+                  </>
+                ) : (
+                  "Create Account"
+                )}
               </Button>
             </form>
           </Form>
-          
-          <div className="mt-6 flex items-center justify-center">
-            <span className="border-t border-neutral-200 flex-grow"></span>
-            <span className="px-3 text-xs text-neutral-400 uppercase">Or sign up with</span>
-            <span className="border-t border-neutral-200 flex-grow"></span>
-          </div>
-          
-          <div className="mt-4 flex space-x-4">
-            <Button 
-              className="flex-1 border border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="#4285F4">
-                <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/>
-              </svg>
-              Google
-            </Button>
-            <Button 
-              className="flex-1 border border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-              </svg>
-              Apple
-            </Button>
-          </div>
         </CardContent>
-        
-        <CardFooter className="flex justify-center p-4 border-t">
-          <p className="text-sm text-neutral-500">
-            Already have an account?{" "}
-            <Button 
-              variant="link" 
-              className="p-0 h-auto text-primary" 
-              onClick={() => navigate("/")}
+
+        <CardFooter>
+        <div className="mt-6 flex items-center justify-center">
+          <span className="border-t border-neutral-200 flex-grow"></span>
+          <span className="px-3 text-xs text-neutral-400 uppercase">Or continue with</span>
+          <span className="border-t border-neutral-200 flex-grow"></span>
+        </div>
+
+        <div className="mt-4 flex space-x-4">
+          <Button
+            className="flex-1 border border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50"
+            onClick={() => handleSocialSignup("Google")}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-2"
+              viewBox="0 0 24 24"
+              fill="#4285F4"
             >
-              Login here
-            </Button>
-          </p>
-        </CardFooter>
-      </Card>
-    </div>
-  );
+              <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/>
+            </svg>
+            Google
+          </Button>
+          <Button
+            className="flex-1 border border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50"
+            onClick={() => handleSocialSignup("Apple")}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-2"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+            </svg>
+            Apple
+          </Button>
+        </div>
+      </CardFooter>
+    </Card>
+  </div>
+);
 }

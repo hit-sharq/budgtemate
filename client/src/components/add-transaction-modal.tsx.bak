@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "components/ui/dialog";
-import { Button } from "components/ui/button";
-import { Input } from "components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { 
   Form, 
   FormControl, 
@@ -9,15 +9,15 @@ import {
   FormItem, 
   FormLabel,
   FormMessage
-} from "components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "components/ui/select";
-import { Textarea } from "components/ui/textarea";
-import { DatePicker } from "components/ui/date-picker";
+} from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { DatePicker } from "@/components/ui/date-picker";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Category, Wallet } from "types";
-import { useTransactions } from "hooks/use-transactions";
+import { Category, Wallet } from "@/types";
+import { useTransactions } from "@/hooks/use-transactions";
 
 interface AddTransactionModalProps {
   open: boolean;
