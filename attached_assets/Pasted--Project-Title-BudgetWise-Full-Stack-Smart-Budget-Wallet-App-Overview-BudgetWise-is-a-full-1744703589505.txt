@@ -1,0 +1,151 @@
+💼 Project Title: BudgetWise — Full-Stack Smart Budget & Wallet App
+📌 Overview
+BudgetWise is a full-stack mobile application designed to help users track their income and expenses, manage personalized budgets, and handle real currency through a secure in-app wallet system. Users can deposit real money into their digital wallet and use it directly within the app to manage spending — merging budgeting and fintech into one seamless experience.
+
+🚀 Key Features
+🔹 Budget Tracking
+Add income and expense transactions
+
+Categorize spending (e.g., Food, Rent, Utilities)
+
+Visual analytics (pie charts, bar graphs, monthly summaries)
+
+AI-powered insights and spending trends (optional)
+
+🔹 Wallet Functionality
+Secure wallet with real currency support
+
+Deposit money via Stripe or mobile money (e.g., M-Pesa, PayPal)
+
+View and manage wallet balance
+
+Spend from wallet when adding expenses
+
+Real-time balance updates and transaction history
+
+🔹 User Account System
+User authentication (email/password or social login)
+
+Secure login, logout, and session handling
+
+User-specific data (wallet, transactions, budgets)
+
+🔹 Smart Budgeting (AI-Powered Roadmap)
+Budget suggestions based on spending patterns
+
+Forecast future expenses
+
+Notifications and alerts when nearing budget limits
+
+🧱 Tech Stack
+🔹 Mobile App (Frontend)
+React Native with TypeScript
+
+React Navigation for screen routing
+
+Victory Native or ChartKit for charts
+
+AsyncStorage / SQLite for local persistence
+
+Secure API integration with backend for wallet and sync
+
+🔹 Backend (API Server)
+Node.js with Express
+
+Prisma ORM + PostgreSQL for database
+
+Stripe API for payments
+
+JWT-based Auth or Clerk/Firebase for authentication
+
+Webhooks for real-time wallet top-up confirmation
+
+🔹 Optional Tools
+Cloudinary for receipt uploads
+
+GPT or ML module for smart suggestions and trend analysis
+
+Redis for caching if scaling is needed
+
+Admin dashboard (web-only) to monitor users and balances
+
+🗂 Database Models (Prisma Schema Highlights)
+ts
+Copy
+Edit
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  password   String
+  wallet     Wallet?
+  transactions Transaction[]
+}
+
+model Wallet {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  balance   Float    @default(0)
+  currency  String   @default("USD")
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  userId      String
+  type        String   // "income" | "expense" | "topup" | "transfer"
+  amount      Float
+  category    String?
+  description String?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+}
+🛠 Core App Screens (Mobile)
+Login & Signup
+
+Dashboard Overview
+
+Add Income/Expense
+
+Wallet View (Balance + Top-Up + History)
+
+Charts & Insights
+
+Settings & Logout
+
+🔐 Security & Compliance
+Secure authentication and token management
+
+SSL-secured backend endpoints
+
+PCI-compliant payment processing via Stripe
+
+Input validation, rate-limiting, and role-based access
+
+🌱 Growth Features (Future Scope)
+Peer-to-peer wallet transfers
+
+Budget goal setting with progress tracking
+
+Shared budgeting (for couples/families)
+
+Receipt scanning with OCR
+
+Multi-currency support
+
+Admin dashboard for monitoring
+
+✅ Project Status
+ Backend API with Prisma & PostgreSQL
+
+ Stripe integration for deposits
+
+ Mobile UI with React Native
+
+ Wallet logic (sync, deduct, display)
+
+ Charts for spending
+
+ Authentication and secure storage
+
+ Optional: AI-powered budgeting advice
+
